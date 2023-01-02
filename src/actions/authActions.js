@@ -1,21 +1,21 @@
 import axios from 'axios';
 import config from '../config/config';
 // Constants
-const LOGIN_REQUEST = 'LOGIN_REQUEST';
-const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-const LOGIN_FAILURE = 'LOGIN_FAILURE';
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 
 // Action creators
-const loginRequest = () => ({
+export const loginRequest = () => ({
   type: LOGIN_REQUEST,
 });
 
-const loginSuccess = (user) => ({
+export const loginSuccess = (user) => ({
   type: LOGIN_SUCCESS,
   user,
 });
 
-const loginFailure = (error) => ({
+export const loginFailure = (error) => ({
   type: LOGIN_FAILURE,
   error,
 });
@@ -25,13 +25,21 @@ export const login = (username, password) => {
   return async (dispatch) => {
     dispatch(loginRequest());
     try {
-      const response = await axios.post(`${config}/cms/auth/login`, {
+      const response = await axios.post(`${config.url}/cms/auth/login`, {
         login: username,
         password,
       });
       dispatch(loginSuccess(response.data));
+      return true;
     } catch (error) {
-      dispatch(loginFailure(error.response.data.error));
+      let message = 'An error occurred';
+      if (error.response) {
+        console.log('im here');
+        console.log(error.response);
+        message = error.response.data.error;
+      }
+      dispatch(loginFailure(message));
+      return false;
     }
   };
 };

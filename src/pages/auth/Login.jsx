@@ -10,24 +10,72 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import MuiAlert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { login } from '../../actions/authActions';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+});
 
 const theme = createTheme();
 
 export default function SignIn() {
   const dispatch = useDispatch();
+  const error = useSelector((state) => state.error);
 
-  const handleSubmit = (event) => {
+  const [successSnackOpen, setSuccessSnackOpen] = React.useState(false);
+  const [errorSnackOpen, setErrorSnackOpen] = React.useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    dispatch(login(data.get('email'), data.get('password')));
+    const success = await dispatch(
+      login(data.get('email'), data.get('password'))
+    );
+    if (success) {
+      setSuccessSnackOpen(true);
+    } else {
+      setErrorSnackOpen(true);
+    }
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccessSnackOpen(false);
+    setErrorSnackOpen(false);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
+        <Snackbar
+          open={successSnackOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity='success'
+            sx={{ width: '100%' }}
+          >
+            Login Success
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={errorSnackOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity='error' sx={{ width: '100%' }}>
+            {error}
+          </Alert>
+        </Snackbar>
         <CssBaseline />
         <Box
           sx={{
