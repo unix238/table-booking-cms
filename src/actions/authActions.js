@@ -36,7 +36,7 @@ export const login = (username, password) => {
       if (error.response) {
         console.log('im here');
         console.log(error.response);
-        message = error.response.data.error;
+        message = error.response.data.message;
       }
       dispatch(loginFailure(message));
       return false;

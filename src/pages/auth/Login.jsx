@@ -16,6 +16,8 @@ import Snackbar from '@mui/material/Snackbar';
 import { login } from '../../actions/authActions';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { useNavigate } from 'react-router-dom';
+
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
 });
@@ -25,6 +27,7 @@ const theme = createTheme();
 export default function SignIn() {
   const dispatch = useDispatch();
   const error = useSelector((state) => state.error);
+  const navigate = useNavigate();
 
   const [successSnackOpen, setSuccessSnackOpen] = React.useState(false);
   const [errorSnackOpen, setErrorSnackOpen] = React.useState(false);
@@ -37,6 +40,8 @@ export default function SignIn() {
     );
     if (success) {
       setSuccessSnackOpen(true);
+      navigate('/');
+      window.location.reload();
     } else {
       setErrorSnackOpen(true);
     }
