@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from '../pages/auth/Login';
 
 export const AppRouter = () => {
@@ -10,7 +10,7 @@ export const AppRouter = () => {
     },
     {
       path: '*',
-      element: <div>404</div>,
+      element: <Navigate to='/' />,
     },
   ]);
 
@@ -25,7 +25,7 @@ export const AppRouter = () => {
     },
     {
       path: '*',
-      element: <div>404</div>,
+      element: <Navigate to='/login' />,
     },
   ]);
 
