@@ -3,6 +3,10 @@ import config from '../config/config';
 
 export const FETCH_RESTAURANTS = 'FETCH_RESTAURANTS';
 export const SET_RESTAURANTS = 'SET_RESTAURANTS';
+export const ADD_RESTAURANT = 'ADD_RESTAURANT';
+export const UPDATE_RESTAURANT = 'UPDATE_RESTAURANT';
+export const FETCH_FOOD_ITEMS = 'FETCH_FOOD_ITEMS';
+export const SET_FOOD_ITEMS = 'SET_FOOD_ITEMS';
 
 export const fetchRestaurants = (state) => {
   return (dispatch) => {
@@ -23,5 +27,48 @@ export const setRestaurants = (restaurants, state) => {
   return {
     type: SET_RESTAURANTS,
     restaurants,
+  };
+};
+
+export const addRestaurant = (restaurant) => {
+  return (dispatch) => {
+    // Make API call to add restaurant
+    return axios
+      .post(`${config.url}/restaurant/addRestaurant`, restaurant)
+      .then((response) => {
+        dispatch({
+          type: ADD_RESTAURANT,
+          restaurant: response.data,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+};
+
+const setFoodItems = (food) => {
+  return {
+    type: SET_FOOD_ITEMS,
+    foodItems: food,
+  };
+};
+
+export const fetchFoodItems = (restaurantId, setRestaurantFood) => {
+  return (dispatch) => {
+    // Make API call to fetch food items
+    return axios
+      .get(`${config.url}/food/getRestaurantFood`, {
+        params: {
+          restaurant: restaurantId,
+        },
+      })
+      .then((response) => {
+        dispatch(setFoodItems(response.data));
+        setRestaurantFood(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from '../pages/auth/Login';
 import { Restaurants } from '../pages/main/Restaurants';
