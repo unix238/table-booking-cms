@@ -1,38 +1,10 @@
-import {
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-} from '../actions/authActions';
+import { combineReducers } from 'redux';
+import restaurantReducer from './restaurantReducer';
+import authReducer from './authReducer';
 
-const initialState = {
-  user: null,
-  loading: false,
-  error: null,
-};
+const rootReducer = combineReducers({
+  restaurant: restaurantReducer,
+  auth: authReducer,
+});
 
-function reducer(state = initialState, action) {
-  switch (action.type) {
-    case LOGIN_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case LOGIN_SUCCESS:
-      localStorage.setItem('user', JSON.stringify(action.user));
-      return {
-        ...state,
-        user: action.user,
-        loading: false,
-      };
-    case LOGIN_FAILURE:
-      return {
-        ...state,
-        error: action.error,
-        loading: false,
-      };
-    default:
-      return state;
-  }
-}
-
-export default reducer;
+export default rootReducer;

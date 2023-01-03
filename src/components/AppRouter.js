@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from '../pages/auth/Login';
+import { Restaurants } from '../pages/main/Restaurants';
 
 export const AppRouter = () => {
   const Routes = createBrowserRouter([
     {
       path: '/',
-      element: <div>Hello world!</div>,
+      element: <Restaurants />,
     },
     {
       path: '*',
