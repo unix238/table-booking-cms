@@ -72,3 +72,26 @@ export const fetchFoodItems = (restaurantId, setRestaurantFood) => {
       });
   };
 };
+
+export const updateRestaurant = (restaurant) => {
+  return (dispatch) => {
+    // Make API call to update restaurant
+    return axios
+      .put(`${config.url}/restaurant/editRestaurant`, {
+        params: {
+          id: restaurant._id,
+        },
+        restaurant,
+      })
+      .then((response) => {
+        console.log({ response: response.data });
+        dispatch({
+          type: UPDATE_RESTAURANT,
+          restaurant: response.data,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+};

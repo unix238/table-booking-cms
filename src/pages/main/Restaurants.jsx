@@ -6,6 +6,7 @@ import {
   fetchRestaurants,
   addRestaurant,
   fetchFoodItems,
+  updateRestaurant,
 } from '../../actions/restaurantActions';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -45,6 +46,13 @@ export const Restaurants = () => {
   const [location, setLocation] = React.useState('');
   const [id, setId] = React.useState('');
 
+  //Food form variables
+  const [foodTitle, setFoodTitle] = React.useState('');
+  const [foodDescription, setFoodDescription] = React.useState('');
+  const [foodPrice, setFoodPrice] = React.useState('');
+  const [foodImage, setFoodImage] = React.useState('');
+  const [foodId, setFoodId] = React.useState('');
+
   React.useEffect(() => {
     document.title = 'Рестораны';
     dispatch(fetchRestaurants(setRestaurants));
@@ -65,14 +73,30 @@ export const Restaurants = () => {
     }
   };
 
+  const handleFoodOpen = (event) => {
+    setFoodTitle(event.row.title);
+    setFoodDescription(event.row.description);
+    setFoodPrice(event.row.price);
+    setFoodImage(event.row.image);
+    setFoodId(event.row.id);
+    setOpenAddNewFood(true);
+  };
+
   const handleAddRestaurant = async (e) => {
     e.preventDefault();
-    const title = e.target.title.value;
-    const description = e.target.description.value;
-    const workTime = e.target.workTime.value;
-    const location = e.target.location.value;
+    if (currentRestaurant?._id) {
+      const restaurant = {
+        _id: id,
+        title,
+        description,
+        workTime,
+        location,
+      };
+      dispatch(updateRestaurant(restaurant));
+      setOpenAddNewRestaurant(false);
+      return;
+    }
     const imageFiles = e.target.fileUpload.files;
-
     const imagesPromise = new Promise((resolve) => {
       let images = [];
       let pending = imageFiles.length;
@@ -99,9 +123,42 @@ export const Restaurants = () => {
         location,
         images,
       };
-      console.log(restaurant);
       dispatch(addRestaurant(restaurant));
       setOpenAddNewRestaurant(false);
+    });
+  };
+
+  const handleFood = async (e) => {
+    e.preventDefault();
+    const imageFiles = e.target.foodUpload.files;
+    const imagesPromise = new Promise((resolve) => {
+      let images = [];
+      let pending = imageFiles.length;
+      for (let i = 0; i < imageFiles.length; i++) {
+        const imageFile = imageFiles[i];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Image = reader.result;
+          images.push(base64Image);
+          pending--;
+          if (pending === 0) {
+            resolve(images);
+          }
+        };
+        reader.readAsDataURL(imageFile);
+      }
+    });
+
+    imagesPromise.then((images) => {
+      const food = {
+        _id: foodId,
+        title: foodTitle,
+        description: foodDescription,
+        price: foodPrice,
+        images,
+      };
+      dispatch(addRestaurant(food));
+      setOpenAddNewFood(false);
     });
   };
 
@@ -122,7 +179,6 @@ export const Restaurants = () => {
         image: food.images[0],
       }))
     );
-    console.log(foods);
   }, [restaurantFood]);
 
   const columns = [
@@ -149,6 +205,7 @@ export const Restaurants = () => {
         open={openAddNewRestaurant}
         component='form'
         onSubmit={handleAddRestaurant}
+        onClose={() => setOpenAddNewRestaurant(false)}
       >
         <DialogTitle>Добавить/Измените ресторан</DialogTitle>
         <DialogContent>
@@ -239,7 +296,14 @@ export const Restaurants = () => {
           <Button type='submit'>Добавить</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openAddNewFood}>
+      <Dialog
+        open={openAddNewFood}
+        onClose={() => {
+          setOpenAddNewFood(false);
+        }}
+        component='form'
+        onSubmit={handleFood}
+      >
         <DialogTitle>Добавить еду</DialogTitle>
         <DialogContent>
           <DialogContentText>Добавьте новое блюдо в ресторан</DialogContentText>
@@ -251,6 +315,23 @@ export const Restaurants = () => {
             type='text'
             fullWidth
             variant='standard'
+            onChange={(e) => {
+              setFoodId(e.target.value);
+            }}
+            value={foodId}
+          />
+          <TextField
+            autoFocus
+            margin='dense'
+            id='foodTitle'
+            label='Название блюда'
+            type='text'
+            fullWidth
+            variant='standard'
+            onChange={(e) => {
+              setFoodTitle(e.target.value);
+            }}
+            value={foodTitle}
           />
           <TextField
             autoFocus
@@ -260,6 +341,10 @@ export const Restaurants = () => {
             type='text'
             fullWidth
             variant='standard'
+            onChange={(e) => {
+              setFoodDescription(e.target.value);
+            }}
+            value={foodDescription}
           />
           <TextField
             autoFocus
@@ -269,6 +354,10 @@ export const Restaurants = () => {
             type='text'
             fullWidth
             variant='standard'
+            onChange={(e) => {
+              setFoodPrice(e.target.value);
+            }}
+            value={foodPrice}
           />
           <label htmlFor='foodUpload'>
             <p className='btn btn-primary'>Фотография блюда</p>
@@ -282,7 +371,7 @@ export const Restaurants = () => {
         </DialogContent>
         <DialogActions>
           <Button>Отмена</Button>
-          <Button>Добавить</Button>
+          <Button type='submit'>Добавить</Button>
         </DialogActions>
       </Dialog>
       <div className='content'>
@@ -339,9 +428,7 @@ export const Restaurants = () => {
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
-            onRowClick={(e) => {
-              console.log(e);
-            }}
+            onRowClick={handleFoodOpen}
           />
         </div>
       </div>
