@@ -157,7 +157,8 @@ export const Restaurants = () => {
         price: foodPrice,
         images,
       };
-      dispatch(addRestaurant(food));
+      // dispatch(addRestaurant(food));
+      console.log(food);
       setOpenAddNewFood(false);
     });
   };
